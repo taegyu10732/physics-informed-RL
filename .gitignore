@@ -1,0 +1,19 @@
+.venv/
+.vscode/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+experiments/
+
+# Local archive: retained on the workstation, intentionally not published.
+archive/raw_research/
+archive/original-rl-cpp.zip
+
+# Large/generated research artifacts
+saved_weight/
+various_sigma_dataset/
+*.pkl
+*.npy
+*.gif
+.ipynb_checkpoints/
