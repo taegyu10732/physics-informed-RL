@@ -15,11 +15,10 @@
 </div>
 
 <p align="center">
-  <img src="docs/images/gas_field_ground_truth.png" width="47%" alt="Obstacle-aware indoor gas field" />
-  <img src="docs/images/gas_field_reconstruction.png" width="47%" alt="Example reconstructed gas field" />
+  <img src="docs/images/gas_source_navigation_rollout.png" width="82%" alt="Gas-source navigation rollout with the agent trajectory, true source, and final PI-U-Net estimate" />
 </p>
 
-<p align="center"><em>Illustrative research artifacts: an obstacle-aware indoor field and a sparse-measurement reconstruction.</em></p>
+<p align="center"><em>Archived 80-step evaluation preview: source distance decreased from 6.79 m to 2.57 m while measured concentration rose from 0.666 to 0.934. The background ground-truth field is shown only for interpretation and is not a policy input.</em></p>
 
 ## What is this?
 
@@ -150,13 +149,20 @@ gsn-train-rl \
 gsn-evaluate experiments/gas_sac/agent.zip \
   --gas-model examples/weights/pi_attention_unet_indoor_gas_v1.pt \
   --gas-device cuda \
-  --episodes 10
+  --episodes 10 \
+  --render
 ```
+
+The published PI-U-Net checkpoint removes the need to retrain the reconstruction
+model before a GPU navigation run. Train or supply an SAC `agent.zip`, keep the
+default full-resolution `320` inference size, and use `--render` to inspect the
+rollout interactively.
 
 ## Public example checkpoint
 
 The repository publishes one pretrained weight as an **example checkpoint** so
-the full reconstruction-to-navigation path can be reproduced immediately.
+the reconstruction component can be loaded without retraining PI-U-Net from
+scratch.
 
 | File | Purpose | Size | SHA-256 |
 |---|---|---:|---|
