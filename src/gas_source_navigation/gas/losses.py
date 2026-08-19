@@ -9,7 +9,7 @@ import torch
 import torch.nn.functional as functional
 from torch import nn
 
-from gas_predict.model import GasPrediction
+from gas_source_navigation.gas.model import GasPrediction
 
 Direction = Literal["x", "y"]
 DifferenceMode = Literal["forward", "backward"]

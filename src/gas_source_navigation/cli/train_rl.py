@@ -11,8 +11,9 @@ from stable_baselines3 import SAC
 from stable_baselines3.common.callbacks import CheckpointCallback
 from stable_baselines3.common.monitor import Monitor
 
-from rlm.architectures import GasMapFeaturesExtractor
-from rlm.mower_env import MowerEnv
+from gas_source_navigation.gas.inference import GasMapPredictor
+from gas_source_navigation.rl.architectures import StackedMapFeaturesExtractor
+from gas_source_navigation.rl.environment import MowerEnv
 
 
 def parse_args() -> argparse.Namespace:
@@ -24,7 +25,23 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--checkpoint-every", type=int, default=100_000)
     parser.add_argument("--resume", type=Path)
     parser.add_argument("--output", type=Path)
-    parser.add_argument("--map-dir", type=Path, default=Path("maps"))
+    parser.add_argument(
+        "--map-dir",
+        type=Path,
+        help="Custom map directory; packaged maps are used by default",
+    )
+    parser.add_argument("--input-size", type=int, default=32)
+    parser.add_argument("--num-maps", type=int, default=4)
+    parser.add_argument("--scale-factor", type=float, default=4.0)
+    parser.add_argument("--stacks", type=int, default=1)
+    parser.add_argument(
+        "--gas-model",
+        type=Path,
+        required=True,
+        help="PI-Attention-UNet state dict used to reconstruct the map at every step",
+    )
+    parser.add_argument("--gas-device", default="auto", help="auto, cpu, cuda, or cuda:N")
+    parser.add_argument("--gas-inference-size", type=int, default=320)
     parser.add_argument("--seed", type=int, default=0)
     return parser.parse_args()
 
@@ -38,10 +55,31 @@ def main() -> None:
         encoding="utf-8",
     )
 
-    env = Monitor(MowerEnv(map_dir=args.map_dir, seed=args.seed), str(output / "monitor.csv"))
+    gas_predictor = GasMapPredictor(
+        args.gas_model,
+        device=args.gas_device,
+        inference_size=args.gas_inference_size,
+    )
+    env = Monitor(
+        MowerEnv(
+            map_dir=args.map_dir,
+            gas_predictor=gas_predictor,
+            input_size=args.input_size,
+            num_maps=args.num_maps,
+            scale_factor=args.scale_factor,
+            stacks=args.stacks,
+            seed=args.seed,
+        ),
+        str(output / "monitor.csv"),
+    )
     policy_kwargs = {
-        "features_extractor_class": GasMapFeaturesExtractor,
-        "features_extractor_kwargs": {"features_dim": args.features},
+        "features_extractor_class": StackedMapFeaturesExtractor,
+        "features_extractor_kwargs": {
+            "features_dim": args.features,
+            "map_size": args.input_size,
+            "num_maps": args.num_maps,
+            "stacks": args.stacks,
+        },
         "net_arch": {"pi": [args.features] * 2, "qf": [args.features] * 2},
     }
     if args.resume:

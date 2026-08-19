@@ -8,9 +8,9 @@ from pathlib import Path
 import torch
 from torch.utils.data import DataLoader, random_split
 
-from gas_predict import PhysicsInformedAttentionUNet
-from gas_predict.data import GasFieldDataset
-from gas_predict.losses import PhysicsInformedLoss
+from gas_source_navigation.gas import PhysicsInformedAttentionUNet
+from gas_source_navigation.gas.data import GasFieldDataset
+from gas_source_navigation.gas.losses import PhysicsInformedLoss
 
 
 def main() -> None:

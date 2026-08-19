@@ -7,8 +7,8 @@ __pycache__/
 experiments/
 
 # Local archive: retained on the workstation, intentionally not published.
-archive/raw_research/
-archive/original-rl-cpp.zip
+archive/*
+!archive/README.md
 
 # Large/generated research artifacts
 saved_weight/
@@ -17,3 +17,8 @@ various_sigma_dataset/
 *.npy
 *.gif
 .ipynb_checkpoints/
+
+# Python build outputs
+build/
+dist/
+*.egg-info/

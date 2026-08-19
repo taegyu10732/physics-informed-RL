@@ -1,8 +1,11 @@
 import pytest
 import torch
 
-from gas_predict.model import AttentionUNet
-from gas_predict.losses import directional_derivative, quadrant_directional_physics_loss
+from gas_source_navigation.gas.losses import (
+    directional_derivative,
+    quadrant_directional_physics_loss,
+)
+from gas_source_navigation.gas.model import AttentionUNet
 
 
 def test_attention_unet_output_shapes():
@@ -13,6 +16,17 @@ def test_attention_unet_output_shapes():
     assert prediction.sigma.shape == (2, 1)
     assert prediction.source_position.shape == (2, 2)
     assert torch.all((prediction.source_position >= 0) & (prediction.source_position <= 1))
+    assert set(prediction.attention_maps) == {"att1", "att2", "att3", "att4"}
+
+
+def test_attention_unet_keeps_research_checkpoint_keys():
+    state = AttentionUNet(base_channels=8).state_dict()
+    assert "enc1.block.0.bias" in state
+    assert "att4.W_g.1.running_mean" in state
+    assert "att4.psi.1.running_var" in state
+    assert "final_conv.0.weight" in state
+    assert "final_conv_sigma.2.weight" in state
+    assert "final_conv_pos.2.weight" in state
 
 
 def test_attention_unet_rejects_invalid_size():

@@ -1,0 +1,1 @@
+"""Packaged occupancy-map assets."""

@@ -1,7 +1,10 @@
 import numpy as np
 import pytest
 
-from gas_predict.dispersion import geodesic_distance_map, indoor_gas_concentration
+from gas_source_navigation.gas.dispersion import (
+    geodesic_distance_map,
+    indoor_gas_concentration,
+)
 
 
 def test_geodesic_distance_routes_around_wall():

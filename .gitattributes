@@ -1,0 +1,2 @@
+# Publish the example PI-U-Net checkpoint through Git LFS.
+examples/weights/*.pt filter=lfs diff=lfs merge=lfs -text
